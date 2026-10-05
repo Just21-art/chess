@@ -34,8 +34,9 @@
   .board {
     display:grid;
     grid-template-columns:repeat(8,1fr);
+    grid-template-rows:repeat(8,1fr);
     width:min(92vw,480px);
-    height:min(92vw,480px);
+    aspect-ratio:1 / 1;
     border:4px solid #ffd700;
     border-radius:10px;
     overflow:hidden;
@@ -45,10 +46,11 @@
     display:flex;
     align-items:center;
     justify-content:center;
-    font-size:min(9vw,44px);
+    font-size:min(10vw, 50px);
     cursor:pointer;
     user-select:none;
     transition:0.15s;
+    aspect-ratio:1 / 1;
   }
   .light { background:#f0d9b5; }
   .dark { background:#b58863; }
@@ -91,8 +93,6 @@
 (function() {
   "use strict";
 
-  // Фигуры: белые заглавные, чёрные строчные
-  // K-король Q-королева R-ладья B-слон N-конь P-пешка
   var initialBoard = [
     ["r","n","b","q","k","b","n","r"],
     ["p","p","p","p","p","p","p","p"],
@@ -175,7 +175,6 @@
     var c = parseInt(e.currentTarget.getAttribute("data-c"), 10);
     var piece = board[r][c];
 
-    // Если выбрана фигура и клик по возможному ходу — двигаем
     if (selected) {
       var move = possibleMoves.find(function(m) { return m.r === r && m.c === c; });
       if (move) {
@@ -184,7 +183,6 @@
       }
     }
 
-    // Клик по своей фигуре — выбираем
     var isMyPiece = (turn === "white" && isWhite(piece)) || (turn === "black" && isBlack(piece));
     if (isMyPiece) {
       selected = { r: r, c: c };
@@ -193,7 +191,6 @@
       return;
     }
 
-    // Клик по пустому или чужому — снимаем выделение
     selected = null;
     possibleMoves = [];
     render();
@@ -206,7 +203,6 @@
     board[toR][toC] = piece;
     board[fromR][fromC] = "";
 
-    // Превращение пешки (простое — в королеву)
     if (piece === "P" && toR === 0) board[toR][toC] = "Q";
     if (piece === "p" && toR === 7) board[toR][toC] = "q";
 
@@ -221,7 +217,6 @@
 
     turn = turn === "white" ? "black" : "white";
 
-    // Проверка на мат/шах — упрощённо, только если король съеден
     if (captured === "k") {
       gameOver = true;
       statusEl.textContent = "🏆 Белые победили!";
@@ -262,15 +257,12 @@
     if (type === "P") {
       var dir = white ? -1 : 1;
       var startRow = white ? 6 : 1;
-      // Вперёд
       if (r + dir >= 0 && r + dir <= 7 && board[r + dir][c] === "") {
         moves.push({ r: r + dir, c: c });
-        // Двойной ход
         if (r === startRow && board[r + dir * 2][c] === "") {
           moves.push({ r: r + dir * 2, c: c });
         }
       }
-      // Взятие по диагонали
       [-1, 1].forEach(function(dc) {
         var nr = r + dir, nc = c + dc;
         if (nr >= 0 && nr <= 7 && nc >= 0 && nc <= 7) {
@@ -307,4 +299,4 @@
 })();
 </script>
 </body>
-  </html>
+</html>
