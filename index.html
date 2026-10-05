@@ -7,50 +7,64 @@
 <style>
   * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
   body {
-    min-height:100vh;
+    height:100vh;
     display:flex;
     flex-direction:column;
     align-items:center;
     justify-content:center;
     background:linear-gradient(135deg,#1a1a2e 0%,#16213e 100%);
     font-family:'Segoe UI',Arial,sans-serif;
-    padding:8px;
+    padding:6px;
     color:#fff;
+    overflow:hidden;
   }
-  h1 {
-    color:#ffd700;
-    font-size:18px;
+  .top-bar {
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    width:min(96vw, 96vh, 520px);
     margin-bottom:6px;
-    text-shadow:0 0 15px rgba(255,215,0,0.6);
+    gap:8px;
   }
   #turn {
-    font-size:15px;
-    margin-bottom:8px;
-    padding:6px 16px;
-    border-radius:10px;
+    font-size:14px;
+    padding:6px 14px;
+    border-radius:8px;
     background:#1e293b;
     font-weight:bold;
+    flex:1;
+    text-align:center;
   }
+  #resetBtn {
+    padding:6px 14px;
+    background:#ffd700;
+    color:#1a1a2e;
+    border:none;
+    border-radius:8px;
+    font-weight:bold;
+    font-size:14px;
+    cursor:pointer;
+  }
+  #resetBtn:active { transform:scale(0.95); }
   .board {
     display:grid;
     grid-template-columns:repeat(8,1fr);
     grid-template-rows:repeat(8,1fr);
-    width:min(92vw, 78vh, 480px);
+    width:min(96vw, 92vh, 520px);
     aspect-ratio:1 / 1;
-    border:4px solid #ffd700;
-    border-radius:10px;
+    border:3px solid #ffd700;
+    border-radius:8px;
     overflow:hidden;
-    box-shadow:0 15px 50px rgba(0,0,0,0.7);
+    box-shadow:0 10px 40px rgba(0,0,0,0.7);
   }
   .cell {
     display:flex;
     align-items:center;
     justify-content:center;
-    font-size:min(10vw, 8vh, 50px);
+    font-size:min(11vw, 10vh, 52px);
     cursor:pointer;
     user-select:none;
     transition:0.15s;
-    aspect-ratio:1 / 1;
   }
   .light { background:#f0d9b5; }
   .dark { background:#b58863; }
@@ -60,34 +74,16 @@
   .piece { pointer-events:none; }
   .white-piece { color:#fff; text-shadow:0 0 3px #000, 0 0 3px #000; }
   .black-piece { color:#000; text-shadow:0 0 3px #fff; }
-  #status {
-    margin-top:8px;
-    color:#888;
-    font-size:12px;
-    text-align:center;
-    min-height:16px;
-  }
-  #resetBtn {
-    margin-top:8px;
-    padding:8px 20px;
-    background:#ffd700;
-    color:#1a1a2e;
-    border:none;
-    border-radius:10px;
-    font-weight:bold;
-    font-size:14px;
-    cursor:pointer;
-  }
-  #resetBtn:active { transform:scale(0.95); }
 </style>
 </head>
 <body>
 
-<h1>♟️ ШАХМАТЫ</h1>
-<div id="turn">Ход: белые</div>
+<div class="top-bar">
+  <div id="turn">Ход: белые</div>
+  <button id="resetBtn">🔄 Заново</button>
+</div>
+
 <div class="board" id="board"></div>
-<div id="status">Нажми на фигуру, потом на клетку</div>
-<button id="resetBtn">🔄 Новая игра</button>
 
 <script>
 (function() {
@@ -117,7 +113,6 @@
 
   var boardEl = document.getElementById("board");
   var turnEl = document.getElementById("turn");
-  var statusEl = document.getElementById("status");
 
   function resetGame() {
     board = initialBoard.map(function(row) { return row.slice(); });
@@ -125,7 +120,6 @@
     possibleMoves = [];
     turn = "white";
     gameOver = false;
-    statusEl.textContent = "Нажми на фигуру, потом на клетку";
     render();
   }
 
@@ -209,20 +203,16 @@
     selected = null;
     possibleMoves = [];
 
-    if (captured) {
-      statusEl.textContent = (turn === "white" ? "Белые" : "Чёрные") + " съели фигуру!";
-    } else {
-      statusEl.textContent = "";
-    }
-
     turn = turn === "white" ? "black" : "white";
 
     if (captured === "k") {
       gameOver = true;
-      statusEl.textContent = "🏆 Белые победили!";
+      turnEl.textContent = "🏆 Белые победили!";
+      turnEl.style.color = "#ffd700";
     } else if (captured === "K") {
       gameOver = true;
-      statusEl.textContent = "🏆 Чёрные победили!";
+      turnEl.textContent = "🏆 Чёрные победили!";
+      turnEl.style.color = "#ffd700";
     }
 
     render();
